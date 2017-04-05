@@ -49,17 +49,16 @@ public final class QuoteSyncJob {
         from.add(Calendar.YEAR, -YEARS_OF_HISTORY);
 
 
+        Set<String> stockPref = PrefUtils.getStocks(context);
+        Set<String> stockCopy = new HashSet<>();
+        stockCopy.addAll(stockPref);
+        String[] stockArray = stockPref.toArray(new String[stockPref.size()]);
 
-            Set<String> stockPref = PrefUtils.getStocks(context);
-            Set<String> stockCopy = new HashSet<>();
-            stockCopy.addAll(stockPref);
-            String[] stockArray = stockPref.toArray(new String[stockPref.size()]);
+        Timber.d(stockCopy.toString());
 
-            Timber.d(stockCopy.toString());
-
-            if (stockArray.length == 0) {
-                return;
-            }
+        if (stockArray.length == 0) {
+            return;
+        }
 
         Map<String, Stock> quotes = null;
         try {
@@ -70,52 +69,51 @@ public final class QuoteSyncJob {
 
         Iterator<String> iterator = stockPref.iterator();
 
-            Timber.d(quotes.toString());
-
-            ArrayList<ContentValues> quoteCVs = new ArrayList<>();
-
-            while (iterator.hasNext()) {
-                String symbol = iterator.next();
-
-                Stock stock = quotes.get(symbol);
-                StockQuote quote = stock.getQuote();
-                if(!(stock.toString().contains("null")) && !(quote.toString().contains("null"))){
-                    float price = quote.getPrice().floatValue();
-                    float change = quote.getChange().floatValue();
-                    float percentChange = quote.getChangeInPercent().floatValue();
 
 
-                    // WARNING! Don't request historical data for a stock that doesn't exist!
-                    // The request will hang forever X_x
-                    List<HistoricalQuote> history = null;
-                    try {
-                        history = stock.getHistory(from, to, Interval.WEEKLY);
-                    }  catch (IOException exception) {
-                        Timber.e(exception, "Error fetching stock quotes");
-                    }
+        ArrayList<ContentValues> quoteCVs = new ArrayList<>();
 
-                    StringBuilder historyBuilder = new StringBuilder();
+        while (iterator.hasNext()) {
+            String symbol = iterator.next();
 
-                    for (HistoricalQuote it : history) {
-                        historyBuilder.append(it.getDate().getTimeInMillis());
-                        historyBuilder.append(", ");
-                        historyBuilder.append(it.getClose());
-                        historyBuilder.append("\n");
-                    }
-
-                    ContentValues quoteCV = new ContentValues();
-                    quoteCV.put(Contract.Quote.COLUMN_SYMBOL, symbol);
-                    quoteCV.put(Contract.Quote.COLUMN_PRICE, price);
-                    quoteCV.put(Contract.Quote.COLUMN_PERCENTAGE_CHANGE, percentChange);
-                    quoteCV.put(Contract.Quote.COLUMN_ABSOLUTE_CHANGE, change);
+            Stock stock = quotes.get(symbol);
+            StockQuote quote = stock.getQuote();
+            if (!(stock.toString().contains("null")) && !(quote.toString().contains("null"))) {
+                float price = quote.getPrice().floatValue();
+                float change = quote.getChange().floatValue();
+                float percentChange = quote.getChangeInPercent().floatValue();
 
 
-                    quoteCV.put(Contract.Quote.COLUMN_HISTORY, historyBuilder.toString());
-
-                    quoteCVs.add(quoteCV);
-
+                // WARNING! Don't request historical data for a stock that doesn't exist!
+                // The request will hang forever X_x
+                List<HistoricalQuote> history = null;
+                try {
+                    history = stock.getHistory(from, to, Interval.WEEKLY);
+                } catch (IOException exception) {
+                    Timber.e(exception, "Error fetching stock quotes");
                 }
 
+                StringBuilder historyBuilder = new StringBuilder();
+
+                for (HistoricalQuote it : history) {
+                    historyBuilder.append(it.getDate().getTimeInMillis());
+                    historyBuilder.append(", ");
+                    historyBuilder.append(it.getClose());
+                    historyBuilder.append("\n");
+                }
+
+                ContentValues quoteCV = new ContentValues();
+                quoteCV.put(Contract.Quote.COLUMN_SYMBOL, symbol);
+                quoteCV.put(Contract.Quote.COLUMN_PRICE, price);
+                quoteCV.put(Contract.Quote.COLUMN_PERCENTAGE_CHANGE, percentChange);
+                quoteCV.put(Contract.Quote.COLUMN_ABSOLUTE_CHANGE, change);
+
+
+                quoteCV.put(Contract.Quote.COLUMN_HISTORY, historyBuilder.toString());
+
+                quoteCVs.add(quoteCV);
+
+            }
 
 
             context.getContentResolver()
