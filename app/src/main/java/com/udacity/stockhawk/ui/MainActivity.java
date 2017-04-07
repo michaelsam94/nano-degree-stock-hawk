@@ -1,6 +1,7 @@
 package com.udacity.stockhawk.ui;
 
 import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -86,11 +87,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 String symbol = adapter.getSymbolAtPosition(viewHolder.getAdapterPosition());
-                int numOfRowsDeleted =getContentResolver().delete(Contract.Quote.makeUriForStock(symbol), null, null);
+                int numOfRowsDeleted =getContentResolver().delete(Contract.Quote.makeUriForStock(symbol),
+                        Contract.Quote.COLUMN_SYMBOL + "=" + symbol, null);
                 if(numOfRowsDeleted > 0){
                     PrefUtils.removeStock(MainActivity.this, symbol);
-                    //QuoteSyncJob.syncImmediately(MainActivity.this);
-                    //updateWidget();
+                    //updateAllWidgets();
                 }
 
                 Timber.d("number of rows deleted %d",numOfRowsDeleted);
@@ -147,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             PrefUtils.addStock(this, symbol);
             QuoteSyncJob.syncImmediately(this);
-            updateWidget();
+            //updateAllWidgets();
         }
     }
 
@@ -208,9 +209,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
         return super.onOptionsItemSelected(item);
     }
-    private void updateWidget(){
-        Intent updateWidgetIntent = new Intent(this,StockWidgetProvider.class);
-        updateWidgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        startActivity(updateWidgetIntent);
-    }
+    /*private void updateAllWidgets(){
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, StockWidgetProvider.class));
+        if (appWidgetIds.length > 0) {
+            new StockWidgetProvider().onUpdate(this, appWidgetManager, appWidgetIds);
+        }
+    }*/
 }

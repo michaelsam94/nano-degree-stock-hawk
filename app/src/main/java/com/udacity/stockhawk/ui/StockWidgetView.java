@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Binder;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -38,14 +39,23 @@ public class StockWidgetView implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public void onDataSetChanged() {
-
+        if (mWidgetCursor != null) {
+            mWidgetCursor.close();
+        }
+        final long identityToken = Binder.clearCallingIdentity();
+        mWidgetCursor = ctxt.getContentResolver().query(Contract.Quote.URI,
+                new String[]{ Contract.Quote.COLUMN_SYMBOL,Contract.Quote.COLUMN_PRICE,Contract.Quote.COLUMN_HISTORY},
+                null,
+                null,
+                Contract.Quote.COLUMN_SYMBOL);
+        Binder.restoreCallingIdentity(identityToken);
     }
 
 
 
     @Override
     public void onDestroy() {
-
+        mWidgetCursor.close();
     }
 
     @Override

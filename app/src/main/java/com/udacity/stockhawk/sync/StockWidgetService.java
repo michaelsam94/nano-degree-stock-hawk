@@ -2,6 +2,7 @@ package com.udacity.stockhawk.sync;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.IBinder;
 import android.widget.RemoteViewsService;
 
 import com.udacity.stockhawk.data.Contract;
@@ -11,6 +12,8 @@ import com.udacity.stockhawk.ui.StockWidgetView;
 
 
 public class StockWidgetService extends RemoteViewsService {
+
+
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         StockWidgetView stockWidgetView = new StockWidgetView(getApplicationContext(),intent);
@@ -24,4 +27,8 @@ public class StockWidgetService extends RemoteViewsService {
 
         return stockWidgetView;
     }
+
+
+
+
 }

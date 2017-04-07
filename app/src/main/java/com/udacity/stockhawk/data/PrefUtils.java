@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.udacity.stockhawk.R;
+import com.udacity.stockhawk.sync.QuoteSyncJob;
+import com.udacity.stockhawk.ui.MainActivity;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -51,6 +53,7 @@ public final class PrefUtils {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putStringSet(key, stocks);
         editor.apply();
+        QuoteSyncJob.syncImmediately(context);
     }
 
     public static void addStock(Context context, String symbol) {
