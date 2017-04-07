@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Stock Hawk</string>
 
@@ -21,23 +22,25 @@
     <string name="action_change_units">@string/pref_display_mode_key</string>
 
 
-    <string name="dialog_title">Add Stock</string>
-    <string name="dialog_hint">Symbol (e.g. GOOG)</string>
-    <string name="dialog_cancel">Cancel</string>
-    <string name="dialog_add">Add</string>
+    <string name="dialog_title">اضف سهم</string>
+    <string name="dialog_hint">سهم (e.g. GOOG)</string>
+    <string name="dialog_cancel">الغاء</string>
+    <string name="dialog_add">اضف</string>
 
-    <string name="error_no_network">No network connectivity! Will load stock cursor when the network is available.</string>
-    <string name="error_no_stocks">No stocks added! Hit the floating action button to add one.</string>
+    <string name="error_no_network">لا يوجد اتصال بشبكة الانترنت</string>
+    <string name="error_no_stocks"> لم تتم اضافة اي سهم اضغط علي زر الاضافة لاضافة سهم اخر</string>
 
-    <string name="toast_stock_added_no_connectivity">Symbol %s added. Will refresh when network available.</string>
-    <string name="toast_no_connectivity">Will refresh when network available.</string>
-    <string name="tv_error_main_activity">Error message</string>
+    <string name="toast_stock_added_no_connectivity"> تم اضافة السهم %s سوف يتم التحديث عند توافر الاتصال</string>
+
+    <string name="toast_no_connectivity">سوف يتم التحديث عند توافر الاتصال</string>
+    <string name="tv_error_main_activity">حدث خطا</string>
     <string name="tv_symbol_place_holder_item_quote">GOOG</string>
     <string name="tv_price_place_holder_item_quote">1000.00</string>
     <string name="tv_change_item_quote">100%</string>
-    <string name="stock_symbol_prefix">the symbol is</string>
-    <string name="stock_price_prefix">the price is</string>
-    <string name="btn_add_new_stock_desc">add new stock</string>
-    <string name="btn_cancel_desc">cancel</string>
+    <string name="stock_symbol_prefix">السهم </string>
+    <string name="stock_price_prefix">السعر </string>
+    <string name="btn_add_new_stock_desc">اضف سهم</string>
+    <string name="btn_cancel_desc">الغاء</string>
+
 
 </resources>

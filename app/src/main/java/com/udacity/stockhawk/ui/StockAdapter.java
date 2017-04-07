@@ -33,8 +33,10 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
         this.context = context;
         this.clickHandler = clickHandler;
 
-        dollarFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
-        dollarFormatWithPlus = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
+        dollarFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(context.getResources()
+                .getConfiguration().locale);
+        dollarFormatWithPlus = (DecimalFormat) NumberFormat.getCurrencyInstance(context.getResources()
+                .getConfiguration().locale);
         dollarFormatWithPlus.setPositivePrefix("+$");
         percentageFormat = (DecimalFormat) NumberFormat.getPercentInstance(Locale.getDefault());
         percentageFormat.setMaximumFractionDigits(2);
@@ -69,6 +71,10 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
 
         holder.symbol.setText(cursor.getString(Contract.Quote.POSITION_SYMBOL));
         holder.price.setText(dollarFormat.format(cursor.getFloat(Contract.Quote.POSITION_PRICE)));
+        holder.symbol.setContentDescription(context.getString(R.string.stock_symbol_prefix)
+                + cursor.getString(Contract.Quote.POSITION_SYMBOL));
+        holder.price.setContentDescription(context.getString(R.string.stock_price_prefix)
+                + cursor.getString(Contract.Quote.POSITION_PRICE));
 
 
         float rawAbsoluteChange = cursor.getFloat(Contract.Quote.POSITION_ABSOLUTE_CHANGE);

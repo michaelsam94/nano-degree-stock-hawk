@@ -1,4 +1,4 @@
-package com.udacity.stockhawk.widget;
+package com.udacity.stockhawk.data;
 
 
 import android.app.PendingIntent;
@@ -12,10 +12,12 @@ import android.widget.RemoteViews;
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.sync.StockWidgetService;
 import com.udacity.stockhawk.ui.MainActivity;
+import com.udacity.stockhawk.ui.StockHistoryActivity;
 
 public class StockWidgetProvider extends AppWidgetProvider {
 
-    public static final String EXTRA_WORD = "word";
+
+
 
     @Override
     public void onUpdate(Context ctxt, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -28,19 +30,23 @@ public class StockWidgetProvider extends AppWidgetProvider {
             RemoteViews widget=new RemoteViews(ctxt.getPackageName(),
                     R.layout.stock_widget);
 
-            widget.setRemoteAdapter(R.id.words, svcIntent);
+            widget.setRemoteAdapter(R.id.lv_widget_stocks, svcIntent);
 
-            Intent clickIntent=new Intent(ctxt, MainActivity.class);
+            Intent clickIntent=new Intent(ctxt, StockHistoryActivity.class);
             PendingIntent clickPI=PendingIntent
                     .getActivity(ctxt, 0,
                             clickIntent,
                             PendingIntent.FLAG_UPDATE_CURRENT);
 
-            widget.setPendingIntentTemplate(R.id.words, clickPI);
+            widget.setPendingIntentTemplate(R.id.lv_widget_stocks, clickPI);
 
             appWidgetManager.updateAppWidget(appWidgetIds[i], widget);
         }
 
         super.onUpdate(ctxt, appWidgetManager, appWidgetIds);
     }
+
+
+
+
 }

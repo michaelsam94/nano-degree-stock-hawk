@@ -57,6 +57,16 @@ public class AddStockDialog extends DialogFragment {
 
         Dialog dialog = builder.create();
 
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                ((AlertDialog)dialog).getButton(AlertDialog.BUTTON_POSITIVE).setContentDescription(
+                        getActivity().getString(R.string.btn_add_new_stock_desc));
+                ((AlertDialog)dialog).getButton(AlertDialog.BUTTON_NEGATIVE).setContentDescription(
+                        getActivity().getString(R.string.btn_cancel_desc));
+            }
+        });
+
         Window window = dialog.getWindow();
         if (window != null) {
             window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);

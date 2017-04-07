@@ -3,21 +3,21 @@ package com.udacity.stockhawk.ui;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.udacity.stockhawk.R;
-import com.udacity.stockhawk.widget.StockWidgetProvider;
+import com.udacity.stockhawk.data.Contract;
+import com.udacity.stockhawk.data.StockWidgetProvider;
 
 
 public class StockWidgetView implements RemoteViewsService.RemoteViewsFactory {
-    private static final String[] items= { "lorem", "ipsum", "dolor",
-            "sit", "amet", "consectetuer", "adipiscing", "elit", "morbi",
-            "vel", "ligula", "vitae", "arcu", "aliquet", "mollis", "etiam",
-            "vel", "erat", "placerat", "ante", "porttitor", "sodales",
-            "pellentesque", "augue", "purus" };
+
+
     private Context ctxt=null;
+    private Cursor mWidgetCursor = null;
     private int appWidgetId;
 
     public StockWidgetView(Context ctxt, Intent intent){
@@ -26,6 +26,10 @@ public class StockWidgetView implements RemoteViewsService.RemoteViewsFactory {
                 intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                         AppWidgetManager.INVALID_APPWIDGET_ID);
     }
+    public void setWidgetCursor(Cursor widgetCursor){
+        this.mWidgetCursor = widgetCursor;
+    }
+
 
     @Override
     public void onCreate() {
@@ -37,6 +41,8 @@ public class StockWidgetView implements RemoteViewsService.RemoteViewsFactory {
 
     }
 
+
+
     @Override
     public void onDestroy() {
 
@@ -44,23 +50,31 @@ public class StockWidgetView implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public int getCount() {
-        return items.length;
+        if(mWidgetCursor != null) return mWidgetCursor.getCount();
+        return 0;
     }
 
     @Override
     public RemoteViews getViewAt(int position) {
         RemoteViews row=
                 new RemoteViews(ctxt.getPackageName(), R.layout.row);
-
-        row.setTextViewText(android.R.id.text1, items[position]);
+        if(mWidgetCursor != null){
+            mWidgetCursor.moveToPosition(position);
+            String stockName = mWidgetCursor.getString(0);
+            String stockPrice = mWidgetCursor.getString(1);
+            row.setTextViewText(R.id.tv_stock_name,stockName);
+            row.setTextViewText(R.id.tv_stock_price,stockPrice);
+        }
 
         Intent i=new Intent();
         Bundle extras=new Bundle();
 
-        extras.putString(StockWidgetProvider.EXTRA_WORD, items[position]);
+        extras.putString(MainActivity.KEY_SYMBOL, mWidgetCursor
+                .getString(0));
+        extras.putString(MainActivity.KEY_HISTORY,mWidgetCursor.getString(2));
         extras.putInt(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         i.putExtras(extras);
-        row.setOnClickFillInIntent(android.R.id.text1, i);
+        row.setOnClickFillInIntent(R.id.rl_widget_stock_item, i);
         return row;
     }
 

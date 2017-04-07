@@ -1,11 +1,13 @@
 package com.udacity.stockhawk.ui;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
+import com.udacity.stockhawk.data.StockWidgetProvider;
 import com.udacity.stockhawk.sync.QuoteSyncJob;
 
 import butterknife.BindView;
@@ -83,8 +86,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 String symbol = adapter.getSymbolAtPosition(viewHolder.getAdapterPosition());
-                PrefUtils.removeStock(MainActivity.this, symbol);
                 int numOfRowsDeleted =getContentResolver().delete(Contract.Quote.makeUriForStock(symbol), null, null);
+                if(numOfRowsDeleted > 0){
+                    PrefUtils.removeStock(MainActivity.this, symbol);
+                    //QuoteSyncJob.syncImmediately(MainActivity.this);
+                    //updateWidget();
+                }
+
                 Timber.d("number of rows deleted %d",numOfRowsDeleted);
             }
 
@@ -123,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     public void button(@SuppressWarnings("UnusedParameters") View view) {
+        view.setContentDescription(getString(R.string.btn_add_new_stock_desc));
         new AddStockDialog().show(getFragmentManager(), "StockDialogFragment");
     }
 
@@ -138,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             PrefUtils.addStock(this, symbol);
             QuoteSyncJob.syncImmediately(this);
+            updateWidget();
         }
     }
 
@@ -197,5 +207,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    private void updateWidget(){
+        Intent updateWidgetIntent = new Intent(this,StockWidgetProvider.class);
+        updateWidgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        startActivity(updateWidgetIntent);
     }
 }
